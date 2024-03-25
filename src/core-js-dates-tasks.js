@@ -114,7 +114,11 @@ function getCountDaysInMonth(month, year) {
  * '2024-02-01T00:00:00.000Z', '2024-02-12T00:00:00.000Z'  => 12
  */
 function getCountDaysOnPeriod(dateStart, dateEnd) {
-  throw new Error('Not implemented');
+  const start = new Date(dateStart);
+  const end = new Date(dateEnd);
+  const millisecondsPerDay = 24 * 60 * 60 * 1000;
+  const difference = Math.abs(end - start);
+  return Math.round(difference / millisecondsPerDay) + 1;
 }
 
 /**
@@ -134,8 +138,12 @@ function getCountDaysOnPeriod(dateStart, dateEnd) {
  * '2024-02-02', { start: '2024-02-02', end: '2024-03-02' } => true
  * '2024-02-10', { start: '2024-02-02', end: '2024-03-02' } => true
  */
-function isDateInPeriod(/* date, period */) {
-  throw new Error('Not implemented');
+function isDateInPeriod(date, period) {
+  const startDate = new Date(period.start);
+  const endDate = new Date(period.end);
+  const checkDate = new Date(date);
+
+  return checkDate >= startDate && checkDate <= endDate;
 }
 
 /**
@@ -149,24 +157,53 @@ function isDateInPeriod(/* date, period */) {
  * '1999-01-05T02:20:00.000Z' => '1/5/1999, 2:20:00 AM'
  * '2010-12-15T22:59:00.000Z' => '12/15/2010, 10:59:00 PM'
  */
-function formatDate(/* date */) {
-  throw new Error('Not implemented');
+function formatDate(date) {
+  const d = new Date(date);
+
+  const months = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    '11',
+    '12',
+  ];
+  const amPm = ['AM', 'PM'];
+
+  const month = months[d.getUTCMonth()];
+  const day = d.getUTCDate();
+  const year = d.getUTCFullYear();
+  const hours = d.getUTCHours();
+  const minutes = d.getUTCMinutes();
+  const seconds = d.getUTCSeconds();
+
+  const formattedHours = hours % 12 || 12;
+  const formattedAmPm = amPm[Math.floor(hours / 12)];
+
+  const formattedMinutes = minutes.toString().padStart(2, '0');
+  const formattedSeconds = seconds.toString().padStart(2, '0');
+
+  return `${month}/${day}/${year}, ${formattedHours}:${formattedMinutes}:${formattedSeconds} ${formattedAmPm}`;
 }
 
-/**
- * Returns the total number of weekend days (Saturdays and Sundays) in a specified month and year.
- *
- * @param {number} month - The source month as a number (1 for January, 2 for February, etc.).
- * @param {number} year - The source year as a four-digit number.
- * @return {number} - The total count of weekend days in the month.
- *
- * @example:
- * 5, 2022 => 9
- * 12, 2023 => 10
- * 1, 2024 => 8
- */
-function getCountWeekendsInMonth(/* month, year */) {
-  throw new Error('Not implemented');
+function getCountWeekendsInMonth(month, year) {
+  let count = 0;
+  const date = new Date(year, month - 1, 1);
+
+  while (date.getMonth() === month - 1) {
+    const dayOfWeek = date.getDay();
+    if (dayOfWeek === 0 || dayOfWeek === 6) {
+      count += 1;
+    }
+    date.setDate(date.getDate() + 1);
+  }
+  return count;
 }
 
 /**
